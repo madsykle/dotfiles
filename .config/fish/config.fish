@@ -19,7 +19,7 @@ alias g git
 alias tmp "cd /tmp"
 alias cl clear
 alias config 'git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
-alias cat batcat
+alias cat bat
 alias gcz 'git-cz' # npm i -g minimal-git-cz
 
 # Keymaps
@@ -91,3 +91,7 @@ function y
 end
 
 set -gx DOTNET_GCHeapHardLimit 1C0000000
+
+# bun
+set --export BUN_INSTALL "$HOME/.bun"
+set --export PATH $BUN_INSTALL/bin $PATH
