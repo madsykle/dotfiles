@@ -4,7 +4,6 @@ local opts = { noremap = true, silent = true }
 vim.g.mapleader = " "
 
 -- General
-keymap.set("n", "<leader>pv", ":Oil<CR>", { desc = "Project View (Oil)" })
 keymap.set("n", "<Esc>", ":noh<CR>", opts)
 
 -- Increment/decrement

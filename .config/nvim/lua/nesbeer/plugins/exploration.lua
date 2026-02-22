@@ -2,6 +2,7 @@ return {
   {
     "stevearc/oil.nvim",
     dependencies = { "nvim-tree/nvim-web-devicons" },
+    cmd = "Oil",
     opts = {
       float = {
         padding = 2,
@@ -15,6 +16,7 @@ return {
     },
     keys = {
       { "-", "<cmd>Oil --float<CR>", desc = "Open parent directory" },
+      { "<leader>pv", "<cmd>Oil<CR>", desc = "Project View (Oil)" },
     },
   },
   {
