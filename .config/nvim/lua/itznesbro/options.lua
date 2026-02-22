@@ -1,6 +1,5 @@
 vim.g.mapleader = " "
 
-vim.scriptencoding = "utf-8"
 vim.opt.encoding = "utf-8"
 vim.opt.fileencoding = "utf-8"
 
@@ -13,11 +12,11 @@ vim.opt.hlsearch = true
 vim.opt.backup = false
 vim.opt.showcmd = true
 vim.opt.cmdheight = 1
-vim.opt.laststatus = 2
+vim.opt.laststatus = 3
 vim.opt.expandtab = true
 vim.opt.scrolloff = 10
 vim.opt.shell = "fish"
-vim.opt.backupskip = { "/tmp/*", "/private/tmp/*" }
+vim.opt.backupskip = { "/tmp/*" }
 vim.opt.inccommand = "split"
 vim.opt.ignorecase = true -- Case insensitive searching UNLESS /C or capital in search
 vim.opt.smarttab = true

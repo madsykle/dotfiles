@@ -1,18 +1,20 @@
 return {
-  {
-    "nvim-treesitter/nvim-treesitter",
-    build = ":TSUpdate",
-    config = function()
-      require'nvim-treesitter'.setup {
-        ensure_installed = { "javascript", "typescript", "tsx", "lua", "fish"},
-        sync_install = false,
-        auto_install = true,
-        highlight = {
-          -- `false` will disable the whole extension
-          enable = true,
-          additional_vim_regex_highlighting = false,
-        },
-      }
-    end
-  },
+	{
+		"nvim-treesitter/nvim-treesitter",
+		build = ":TSUpdate",
+		opts = {
+			ensure_installed = {
+				"css",
+				"fish",
+				"gitignore",
+				"rust",
+        "javascript",
+        "python"
+			},
+    },
+		config = function(_, opts)
+			local TS = require("nvim-treesitter")
+			TS.setup(opts)
+		end,
+  }
 }

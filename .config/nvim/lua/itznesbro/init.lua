@@ -38,6 +38,7 @@ autocmd('LspAttach', {
     vim.keymap.set("i", "<C-h>", function() vim.lsp.buf.signature_help() end, opts)
     vim.keymap.set("n", "<leader>n", ":Lspsaga diagnostic_jump_next<CR>", opts)
     vim.keymap.set("n", "<leader>p", ":Lspsaga diagnostic_jump_prev<CR>", opts)
+    vim.keymap.set("n", "<leader>i", function() vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled()) end, opts)
 
     local bufnr = e.buf
     local client = vim.lsp.get_client_by_id(e.data.client_id)
