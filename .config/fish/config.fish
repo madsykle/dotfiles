@@ -1,7 +1,5 @@
 set fish_greeting ""
 
-set -gx TERM xterm-256color
-
 # theme (Minimalistic, focuses on prompt transparency)
 set -g theme_color_scheme terminal-dark
 set -g fish_prompt_pwd_dir_length 1
@@ -15,8 +13,9 @@ set -g theme_git_default_branches master
 if type -q eza
     alias ls "eza --icons --group-directories-first"
     alias la "eza -a --icons --group-directories-first"
-    alias ll "eza -l --icons --group-directories-first"
-    alias lla "eza -la --icons --group-directories-first"
+    alias ll "eza -l -g --icons --group-directories-first"
+    alias lla "eza -la -g --icons --group-directories-first"
+    alias llg "ll --git"
     alias tree "eza --tree --level=2"
 else
     alias ls "ls -p -G"
@@ -46,6 +45,7 @@ alias gp "git push"
 alias gl "git pull"
 alias gd "git diff"
 alias gco "git checkout"
+alias config 'git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 alias cl clear
 alias v nvim
 alias vim nvim
@@ -56,8 +56,7 @@ bind \cf "tmux-sessionizer"
 
 set -gx EDITOR nvim
 
-# Path management (deduplicated)
-set -U fish_user_paths
+# Path management
 fish_add_path $HOME/bin
 fish_add_path $HOME/.local/bin
 fish_add_path $HOME/.cargo/bin
@@ -66,19 +65,8 @@ fish_add_path $HOME/.yarn/bin
 fish_add_path $HOME/.bun/bin
 fish_add_path $HOME/.local/share/nvim/mason/bin
 
-# NodeJS
-set -gx PATH node_modules/.bin $PATH
-
 # Go
 set -g GOPATH $HOME/go
-
-# OS specific loading
-switch (uname)
-    case Darwin
-        test -f (dirname (status --current-filename))/config-osx.fish; and source (dirname (status --current-filename))/config-osx.fish
-    case Linux
-        test -f (dirname (status --current-filename))/config-linux.fish; and source (dirname (status --current-filename))/config-linux.fish
-end
 
 # Local config
 set LOCAL_CONFIG (dirname (status --current-filename))/config-local.fish

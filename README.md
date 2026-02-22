@@ -38,7 +38,7 @@ These are the dotfiles repositories that inspired this setup:
 1. **Clone the dotfiles repository**:
 
     ```bash
-    git clone --bare https://github.com/ItzNesbro/dotfiles $HOME/.dotfiles
+    git clone --bare https://github.com/madsykle/dotfiles $HOME/.dotfiles
     ```
 
 2. **Install required dependencies**:
