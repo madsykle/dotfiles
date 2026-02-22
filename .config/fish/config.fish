@@ -2,7 +2,7 @@ set fish_greeting ""
 
 set -gx TERM xterm-256color
 
-# theme
+# theme (Minimalistic, focuses on prompt transparency)
 set -g theme_color_scheme terminal-dark
 set -g fish_prompt_pwd_dir_length 1
 set -g theme_display_user yes
@@ -11,88 +11,99 @@ set -g theme_hostname always
 set -g theme_git_default_branches master
 
 # aliases
-alias ls "ls -p -G"
-alias la "ls -A"
-alias ll "ls -l"
-alias lla "ll -A"
+# Modern alternatives if available
+if type -q eza
+    alias ls "eza --icons --group-directories-first"
+    alias la "eza -a --icons --group-directories-first"
+    alias ll "eza -l --icons --group-directories-first"
+    alias lla "eza -la --icons --group-directories-first"
+    alias tree "eza --tree --level=2"
+else
+    alias ls "ls -p -G"
+    alias la "ls -A"
+    alias ll "ls -l"
+    alias lla "ll -A"
+end
+
+if type -q bat
+    alias cat "bat --theme=base16"
+end
+
+if type -q zoxide
+    zoxide init fish | source
+    alias cd z
+end
+
+if type -q fzf
+    fzf --fish | source
+end
+
 alias g git
-alias tmp "cd /tmp"
+alias gs "git status"
+alias ga "git add"
+alias gc "git commit"
+alias gp "git push"
+alias gl "git pull"
+alias gd "git diff"
+alias gco "git checkout"
 alias cl clear
-alias config 'git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
-alias cat bat
-alias gcz 'git-cz' # npm i -g minimal-git-cz
+alias v nvim
+alias vim nvim
+alias reload "source ~/.config/fish/config.fish"
 
 # Keymaps
 bind \cf "tmux-sessionizer"
 
 set -gx EDITOR nvim
 
-set -gx PATH bin $PATH
-set -gx PATH $HOME/bin $PATH
-set -gx PATH $HOME/.local/bin $PATH
-set -gx PATH $HOME/.local/share/nvm/*/bin $PATH
-set -gx PATH $HOME/.local/share/bob/nvim-bin $PATH
+# Path management (deduplicated)
+set -U fish_user_paths
+fish_add_path $HOME/bin
+fish_add_path $HOME/.local/bin
+fish_add_path $HOME/.cargo/bin
+fish_add_path $HOME/go/bin
+fish_add_path $HOME/.yarn/bin
+fish_add_path $HOME/.bun/bin
+fish_add_path $HOME/.local/share/nvim/mason/bin
 
 # NodeJS
 set -gx PATH node_modules/.bin $PATH
 
-# Cargo
-set -gx PATH $HOME/.cargo/bin $PATH
-
 # Go
 set -g GOPATH $HOME/go
-set -gx PATH $GOPATH/bin $PATH
 
-# Yarn
-set -gx PATH $HOME/.yarn/bin $PATH
-
-# NVM
-function __check_rvm --on-variable PWD --description 'Do nvm stuff'
-    status --is-command-substitution; and return
-
-    if test -f .nvmrc; and test -r .nvmrc
-        nvm use
-    else
-    end
-end
-
+# OS specific loading
 switch (uname)
     case Darwin
-        source (dirname (status --current-filename))/config-osx.fish
+        test -f (dirname (status --current-filename))/config-osx.fish; and source (dirname (status --current-filename))/config-osx.fish
     case Linux
-        source (dirname (status --current-filename))/config-linux.fish
-    case '*'
-        source (dirname (status --current-filename))/config-windows.fish
+        test -f (dirname (status --current-filename))/config-linux.fish; and source (dirname (status --current-filename))/config-linux.fish
 end
 
+# Local config
 set LOCAL_CONFIG (dirname (status --current-filename))/config-local.fish
 if test -f $LOCAL_CONFIG
     source $LOCAL_CONFIG
 end
 
+# N-install
 set -x N_PREFIX "$HOME/n"
-contains "$N_PREFIX/bin" $PATH; or set -a PATH "$N_PREFIX/bin" # Added by n-install (see http://git.io/n-install-repo).
+contains "$N_PREFIX/bin" $PATH; or set -a PATH "$N_PREFIX/bin"
 
-# pnpm
+# PNPM
 set -gx PNPM_HOME "$HOME/.local/share/pnpm"
-set -gx PATH "$PNPM_HOME" $PATH
-# pnpm end
+fish_add_path "$PNPM_HOME"
 
-# Mason.nvim
-set -gx PATH "$HOME/.local/share/nvim/mason/bin" $PATH
+# Bun
+set --export BUN_INSTALL "$HOME/.bun"
+fish_add_path $BUN_INSTALL/bin
 
-function y
-	set tmp (mktemp -t "yazi-cwd.XXXXXX")
-	yazi $argv --cwd-file="$tmp"
-	if set cwd (command cat -- "$tmp"); and [ -n "$cwd" ]; and [ "$cwd" != "$PWD" ]
-		builtin cd -- "$cwd"
-	end
-	rm -f -- "$tmp"
+# Pyenv
+if type -q pyenv
+    pyenv init - | source
 end
 
-set -gx DOTNET_GCHeapHardLimit 1C0000000
-
-# bun
-set --export BUN_INSTALL "$HOME/.bun"
-set --export PATH $BUN_INSTALL/bin $PATH
-pyenv init - | source
+# Fast Node Manager
+if type -q fnm
+    fnm env --use-on-cd | source
+end
