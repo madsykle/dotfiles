@@ -22,7 +22,7 @@ else
         fi
     done
 
-    selected=$(find "${valid_dirs[@]}" -mindepth 1 -maxdepth 1 -type d | sort -u | fzf --bind "enter:become(if [ -z {} ]; then echo {q}; else echo {}; fi)")
+    selected=$(find "${valid_dirs[@]}" -mindepth 1 -maxdepth 1 -type d | sort -u | fzf --bind "enter:become(bash -c 'if [ -z \"{}\" ]; then echo \"{q}\"; else echo \"{}\"; fi')")
 fi
 
 if [[ -z $selected ]]; then
