@@ -22,11 +22,25 @@ else
         fi
     done
 
-    selected=$(find "${valid_dirs[@]}" -mindepth 1 -maxdepth 1 -type d | sort -u | fzf)
+    selected=$(find "${valid_dirs[@]}" -mindepth 1 -maxdepth 1 -type d | sort -u | fzf --bind "enter:become(if [ -z {} ]; then echo {q}; else echo {}; fi)")
 fi
 
 if [[ -z $selected ]]; then
     exit 0
+fi
+
+# Expand ~ to $HOME just in case
+selected="${selected/#\~/$HOME}"
+
+# If directory doesn't exist, create it
+if [[ ! -d "$selected" ]]; then
+    # If not an absolute path, default to ~/Dev
+    if [[ "$selected" != /* ]]; then
+        selected="$HOME/Dev/$selected"
+    fi
+    
+    # Create the directory
+    mkdir -p "$selected"
 fi
 
 selected_name=$(basename "$selected" | tr . _)
