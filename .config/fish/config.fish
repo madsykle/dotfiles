@@ -53,6 +53,7 @@ alias reload "source ~/.config/fish/config.fish"
 
 # Keymaps
 bind \cf "tmux-sessionizer"
+bind \cs "tmux-session-selector"
 
 set -gx EDITOR nvim
 

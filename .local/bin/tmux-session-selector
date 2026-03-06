@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-# Check if tmux is running
+# Check if any tmux sessions are running
 if ! pgrep tmux > /dev/null; then
     echo "tmux is not running."
-    exit 1
+    exit 0
 fi
 
 # List all sessions and fuzzy find
@@ -13,7 +13,7 @@ if [[ -z $selected ]]; then
     exit 0
 fi
 
-# Switch to the selected session
+# Switch or attach to the selected session
 if [[ -z $TMUX ]]; then
     tmux attach-session -t "$selected"
 else
