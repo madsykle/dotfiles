@@ -16,21 +16,24 @@ return {
     },
     keys = {
       { "-", "<cmd>Oil --float<CR>", desc = "Open parent directory" },
-      { "<leader>pv", "<cmd>Oil<CR>", desc = "Project View (Oil)" },
+      { "<leader>pv", "<cmd>Oil<CR>", desc = "Project View" },
     },
   },
   {
     "nvim-telescope/telescope.nvim",
     branch = "0.1.x",
     dependencies = { "nvim-lua/plenary.nvim" },
-    config = function()
-      local builtin = require("telescope.builtin")
-      vim.keymap.set("n", "<leader>pf", builtin.find_files, { desc = "Find Files" })
-      vim.keymap.set("n", "<C-p>", builtin.git_files, { desc = "Git Files" })
-      vim.keymap.set("n", "<leader>ps", function()
-        builtin.grep_string({ search = vim.fn.input("Grep > ") })
-      end, { desc = "Search String" })
-      vim.keymap.set("n", "<leader>vh", builtin.help_tags, { desc = "Help Tags" })
-    end,
+    keys = {
+      { "<leader>pf", "<cmd>Telescope find_files<CR>", desc = "Find Files" },
+      { "<C-p>", "<cmd>Telescope git_files<CR>", desc = "Git Files" },
+      {
+        "<leader>ps",
+        function()
+          require("telescope.builtin").grep_string({ search = vim.fn.input("Grep > ") })
+        end,
+        desc = "Search String",
+      },
+      { "<leader>vh", "<cmd>Telescope help_tags<CR>", desc = "Help Tags" },
+    },
   },
 }

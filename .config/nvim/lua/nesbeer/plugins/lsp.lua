@@ -17,14 +17,15 @@ return {
     },
 
     config = function()
-      local lspkind = require('lspkind')
-      local cmp = require('cmp')
+      local lspkind = require("lspkind")
+      local cmp = require("cmp")
       local cmp_lsp = require("cmp_nvim_lsp")
       local capabilities = vim.tbl_deep_extend(
         "force",
         {},
         vim.lsp.protocol.make_client_capabilities(),
-        cmp_lsp.default_capabilities())
+        cmp_lsp.default_capabilities()
+      )
 
       require("fidget").setup({})
       require("mason").setup()
@@ -41,32 +42,26 @@ return {
         },
         handlers = {
           function(server_name)
-            require("lspconfig")[server_name].setup {
-              capabilities = capabilities
-            }
+            require("lspconfig")[server_name].setup({
+              capabilities = capabilities,
+            })
           end,
 
           ["lua_ls"] = function()
-            require("lspconfig").lua_ls.setup {
+            require("lspconfig").lua_ls.setup({
               capabilities = capabilities,
               settings = {
                 Lua = {
                   diagnostics = {
                     globals = { "vim", "it", "describe", "before_each", "after_each" },
-                  }
-                }
-              }
-            }
-          end,
-
-          ["pyright"] = function()
-            require("lspconfig").pyright.setup {
-              capabilities = capabilities,
-            }
+                  },
+                },
+              },
+            })
           end,
 
           ["rust_analyzer"] = function()
-            require("lspconfig").rust_analyzer.setup {
+            require("lspconfig").rust_analyzer.setup({
               capabilities = capabilities,
               settings = {
                 ["rust-analyzer"] = {
@@ -75,30 +70,37 @@ return {
                   },
                 },
               },
-            }
+            })
           end,
-        }
+        },
       })
 
       local cmp_select = { behavior = cmp.SelectBehavior.Select }
 
+      -- Disable semantic tokens for servers that trigger the nil state bug
+      local function disable_semantic_tokens(client)
+        if client.name == "ts_ls" or client.name == "tsserver" then
+          client.server_capabilities.semanticTokensProvider = nil
+        end
+      end
+
       cmp.setup({
         snippet = {
           expand = function(args)
-            require('luasnip').lsp_expand(args.body)
+            require("luasnip").lsp_expand(args.body)
           end,
         },
         mapping = cmp.mapping.preset.insert({
-          ['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
-          ['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
-          ['<CR>'] = cmp.mapping.confirm({ select = true }),
+          ["<C-p>"] = cmp.mapping.select_prev_item(cmp_select),
+          ["<C-n>"] = cmp.mapping.select_next_item(cmp_select),
+          ["<CR>"] = cmp.mapping.confirm({ select = true }),
           ["<C-Space>"] = cmp.mapping.complete(),
         }),
         sources = cmp.config.sources({
-          { name = 'nvim_lsp' },
-          { name = 'luasnip' },
+          { name = "nvim_lsp" },
+          { name = "luasnip" },
         }, {
-          { name = 'buffer' },
+          { name = "buffer" },
         }),
         formatting = {
           format = lspkind.cmp_format({
@@ -112,31 +114,34 @@ return {
             before = function(entry, vim_item)
               return require("tailwindcss-colorizer-cmp").formatter(entry, vim_item)
             end,
-          })
+          }),
         },
         window = {
           completion = cmp.config.window.bordered(),
           documentation = cmp.config.window.bordered(),
-        }
+        },
       })
 
       -- Keymaps on LspAttach
-      vim.api.nvim_create_autocmd('LspAttach', {
-        group = vim.api.nvim_create_augroup('UserLspConfig', {}),
+      vim.api.nvim_create_autocmd("LspAttach", {
+        group = vim.api.nvim_create_augroup("UserLspConfig", {}),
         callback = function(ev)
+          local client = vim.lsp.get_client_by_id(ev.data.client_id)
+          if client then disable_semantic_tokens(client) end
+
           local opts = { buffer = ev.buf }
-          vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
-          vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
-          vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
-          vim.keymap.set('n', '<leader>vd', vim.diagnostic.open_float, opts)
-          vim.keymap.set('n', '<leader>vca', vim.lsp.buf.code_action, opts)
-          vim.keymap.set('n', '<leader>vrr', vim.lsp.buf.references, opts)
-          vim.keymap.set('n', '<leader>vrn', vim.lsp.buf.rename, opts)
-          vim.keymap.set('i', '<C-h>', vim.lsp.buf.signature_help, opts)
-          vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
-          vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
+          vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+          vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+          vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
+          vim.keymap.set("n", "<leader>vd", vim.diagnostic.open_float, opts)
+          vim.keymap.set("n", "<leader>vca", vim.lsp.buf.code_action, opts)
+          vim.keymap.set("n", "<leader>vrr", vim.lsp.buf.references, opts)
+          vim.keymap.set("n", "<leader>vrn", vim.lsp.buf.rename, opts)
+          vim.keymap.set("i", "<C-h>", vim.lsp.buf.signature_help, opts)
+          vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, opts)
+          vim.keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
         end,
       })
-    end
-  }
+    end,
+  },
 }
